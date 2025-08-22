@@ -1,28 +1,29 @@
 const express = require('express');
+const db = require('./data.json');
+const path = require('path')
+
+
 const app = express();
-const path = require('path');
-const db = require("./data.json")
 
-app.set("view engine", "ejs")
-app.set('views', path.join(__dirname, '..', 'views'));
+app.set("view engine" , "ejs");
+app.set(path.join("views","..","views"));
 
 
-app.get("/" ,function (req,res) {
-    res.send("Hello Ji")
+app.get("/" , function (req,res) {
+    res.send("Server is Start")
 
 })
-
-app.get("/:username", function (req, res) {
-    let { username } = req.params;
+app.get("/:username" , function (req,res) {
+    let {username}  = req.params;
     let data = db[username];
+//    if (! data[username]) {
+//     res.send("User Not Found")
+    
+//    }else{
+     res.render("index",{ data,username})
+//    }
 
-    if (!data) {
-        return res.send("User not found");
-    }
-
-    res.render("index", { data });
-});
-
-
+    // res.render("index", {data})
+})
 
 app.listen(3000)
