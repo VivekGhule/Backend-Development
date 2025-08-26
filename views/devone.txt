@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>demo</title>
+    <style>
+        img{
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>This page is belong to :   <%= data.name %> &nbsp; &nbsp;<button>Follow</button> &nbsp; &nbsp; <button>Message</button></h1>
+
+    <p>Followers : <%= data.followers%>  &nbsp; &nbsp; Followings : <%= data.following%></p>
+
+    <hr>
+
+    <h1>Posts</h1>
+    <% for (const e of data.posts) { %>
+        <img src="<%= e.image%>" alt="demo">
+        <p>likes : <%= e.likes%>&nbsp; &nbsp;comments : <%= e.comments%></p>
+        
+   <% } %>
+
+    
+</body>
+</html>
