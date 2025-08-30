@@ -12,27 +12,30 @@
     <a class="mb-8 text-blue-500" href="/read">Read Users</a>
     <br>
     <br>
-   <form action="/user" method="post">
+   <form action="/edit/<%= user._id%>" method="post">
      <input 
       class="px-4 py-2 border mr-5 border-zinc-500 rounded bg-zinc-800 text-white focus:outline-none focus:border-blue-500"  
       type="text" 
       placeholder="Name" 
       name="name"
+      value="<%= user.name %>"
     >
     <input 
       class="px-4 py-2 border mr-5  border-zinc-500 rounded bg-zinc-800 text-white focus:outline-none focus:border-blue-500"  
       type="text" 
       placeholder="Email" 
       name="email"
+      value="<%= user.email %>"
     >
     <input 
       class="px-4 py-2 border mr-5 border-zinc-500 rounded bg-zinc-800 text-white focus:outline-none focus:border-blue-500"  
       type="text" 
       placeholder="Url" 
       name="url"
+      value="<%= user.url %>"
     >
     <input 
-      class="px-8 py-2 border  border-zinc-500 rounded bg-blue-500 text-white focus:outline-none focus:border-blue-500"  
+      class="px-8 py-2 border  border-zinc-500 rounded bg-yellow-500 text-white focus:outline-none focus:border-blue-500"  
       type="submit" 
       name="submit"
     >
