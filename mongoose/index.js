@@ -23,10 +23,13 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User",userSchema)
 
 const user1 = new User({
-    nmae: "Adam",
+    name: "Adam",
     email : "demo@gmail.com",
     age : 18
 })
+
+
+
 
 user1.save();
 
