@@ -1,40 +1,39 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 
-main().then(() => {
-    console.log("Connection Established");
+main().then(res => {
+    console.log("Connection Established to db");
     
-}).catch(err => {
-    console.log("Unable to connect DB",err.message);
-    
-})
+}).catch(err => console.log("Failed to connect to db : ",err.message))
 
-async function main() {
 
-   await mongoose.connect(`mongodb://127.0.0.1:27017/UserDB`)
-    
+async function main(){
+    await mongoose.connect(`mongodb://127.0.0.1:27017/Authdb`)
 }
 
 
-const userSchema = new mongoose.Schema({
-    name: {
-        type : String,
+
+
+
+const userSchma = new mongoose.Schema({
+    name : {
+        type: String,
         required : true,
 
     },
-    email: {
-        type : String,
+    email : {
+        type: String,
         required : true,
         unique: true
-        
+
     },
-    url: {
-        type : String,
-        required : true, 
-    }
+    password : {
+        type: String,
+        required : true,
+    },
 
 })
 
-const User = mongoose.model("User", userSchema);
+let User = mongoose.model("User", userSchma);
 
-module.exports =  User;
+module .exports = User;
