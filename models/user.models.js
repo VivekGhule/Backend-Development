@@ -8,6 +8,7 @@ let userschema = new mongoose.Schema({
     username : {
         type : String,
         required: true,
+        unique:true,
     },
     age : {
         type : String,
@@ -32,4 +33,4 @@ let userschema = new mongoose.Schema({
 
 })
 
-mongoose.exports = mongoose.model("user",userschema)
+module.exports = mongoose.model("User",userschema)

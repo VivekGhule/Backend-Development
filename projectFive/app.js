@@ -1,63 +1,90 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
-const mongoose = require('mongoose');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+const Usermodel = require("../models/user.models.js");
+const postmodel = require("../models/post.models.js");
+const cookieParser = require("cookie-parser");
 
-
-main().then(() => {
+app.set("view engine", "ejs");
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+main()
+  .then(() => {
     console.log(`Connection Established To DB at :`);
-    
-}).catch(err => {
+  })
+  .catch((err) => {
     console.log(err.message);
-    
-})
+  });
 
 async function main() {
-    await mongoose.connect(`mongodb://127.0.0.1:27017/ProjectBlog`)
-    
+  await mongoose.connect(`mongodb://127.0.0.1:27017/ProjectBlog`);
 }
 
-const Usermodel = require("../models/user.models.js")
-const postmodel = require("../models/post.models.js")
+app.get("/", function (req, res) {
+  res.render("index");
+});
+app.get("/home", isLoggedIn, async function (req, res) {
+    let fetchuser = await Usermodel.findOne({email : req.user.email})
+  res.render("home",{fetchuser});
+});
 
-app.set("view engine","ejs");
-app.use(express.json())
-app.use(express.urlencoded({extended : true}))
+app.get("/logout", function (req, res) {
+  res.cookie("token", "");
+  res.redirect("login");
+});
+app.get("/login", function (req, res) {
+  res.render("login");
+});
+app.post("/checkuser", async function (req, res) {
+  let { email, password } = req.body;
+  let fetchUserDet = await Usermodel.findOne({ email });
+  if (!fetchUserDet) return res.status(500).send("Somthing went wrong");
 
-app.get("/",function (req,res) {
-    res.render("index")
-} )
+  await bcrypt.compare(password,fetchUserDet.password, (err, result) => {
+    if (result) {
+      let token = jwt.sign({_id:fetchUserDet._id,email : fetchUserDet.email}, "shh")
+      res.cookie("token", token)
+      res.redirect("/home");
+    } else {
+      res.send("Wrong PAsss");
+    }
+  });
+});
+app.get("/registration", function (req, res) {
+  res.render("registration");
+});
+app.post("/user", async function (req, res) {
+  let { name, username, age, email, password } = req.body;
+  let checkuser = await Usermodel.findOne({ email });
+  if (checkuser) return res.status(500).send("User already registered");
 
-app.get("/login", function (req,res) {
-    res.render("login")
-
-})
-app.get("/registration", function (req,res) {
-    res.render("registration")
-
-})
-app.post("/user", function (req,res) {
-   let {name,username,age,email,password} = req.body;
-
-   bcrypt.genSalt(10,(err,salt) => {
-    bcrypt.hash(password,salt , async(err,hash) => {
-       let user = await Usermodel.create({
+  bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(password, salt, async (err, hash) => {
+      let user = await Usermodel.create({
         name,
         username,
         age,
         email,
-        password: hash
-       })
+        password: hash,
+      });
+      let token = jwt.sign({ _id: user._id, email: user.email }, "shh");
+      res.cookie("token", token);
+      res.redirect("home");
+    });
+  });
+});
 
-       let token = jwt.sign()
-       
+function isLoggedIn(req, res, next) {
+  if (req.cookies.token === "") return res.send("You need To login first");
+  else {
+    let data = jwt.verify(req.cookies.token, "shh");
+    req.user = data;
 
-    })
-    
+  }
+  next();
+}
 
-   })
-
-})
-
-app.listen(8080)
+app.listen(8080);
