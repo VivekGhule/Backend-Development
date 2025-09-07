@@ -28,7 +28,8 @@ app.get("/", function (req, res) {
 });
 app.get("/home", isLoggedIn, async function (req, res) {
     let fetchuser = await Usermodel.findOne({email : req.user.email})
-  res.render("home",{fetchuser});
+    let fetchposts = await postmodel.find({user : fetchuser._id}) 
+  res.render("home",{fetchuser,fetchposts});
 });
 
 app.get("/logout", function (req, res) {
@@ -76,6 +77,26 @@ app.post("/user", async function (req, res) {
     });
   });
 });
+
+
+//** Blog */
+
+app.post("/createblog",isLoggedIn, async function (req,res) {
+   let fetchuser = await Usermodel.findOne({email : req.user.email})
+  let {title,body} = req.body;
+  let post = await postmodel.create({
+    user: fetchuser._id,
+    title : title,
+    content : body
+  })
+
+  fetchuser.posts.push(post._id);
+  await fetchuser.save();
+  res.redirect("/home")
+  
+
+
+})
 
 function isLoggedIn(req, res, next) {
   if (req.cookies.token === "") return res.send("You need To login first");

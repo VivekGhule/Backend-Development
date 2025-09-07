@@ -10,6 +10,7 @@ let postschema = new mongoose.Schema({
     default : Date.now
 
   },
+  title : String,
   content : String,
   likes:[
     {type : mongoose.Schema.Types.ObjectId,ref : "user"
