@@ -14,21 +14,23 @@
       <a class="mb-8 px-2 py-1 rounded-md bg-orange-500 inline-block text-white" href="/logout">Logout</a>
     </div>
 
-    <h2 class="mb-6">Logged in as: <%= fetchuser.name %></h2>
+    
 
     <!-- Blog creation form -->
     <div class="blog mb-10 w-[400px]">
-      <form action="/createblog" method="post" class="space-y-4">
+      <form action="/edit/<%= post._id %>" method="post" class="space-y-4">
         <input 
           type="text" 
           name="title" 
           placeholder="Title" 
           class="w-full p-2 rounded bg-zinc-800 border border-zinc-700"
+          value="<%= post.title %>"
         >
         <textarea 
           name="body" 
           placeholder="Write your post..." 
           class="w-full p-2 rounded bg-zinc-800 border border-zinc-700 resize-none"
+
         ></textarea>
         <input 
           type="submit" 
@@ -37,18 +39,6 @@
         >
       </form>
     </div>
-
-    <% fetchposts.forEach((post) => { %>
-      <div class="postContainer mb-6 p-4 w-[400px] overflow-hidden border border-zinc-700 rounded bg-zinc-800">
-        <h3 class="text-sm text-blue-500 pb-2 ">@<%= fetchuser.username %></h3>
-        <h4 class="text-md font-semibold"><%= post.title %></h4>
-        <p class="mb-4"><%= post.content %></p>
-        <div class="panel flex space-x-4 text-blue-400">
-          <a href="/like/<%= post._id %>">Likes</a>
-          <a href="/edit/<%= post.id %>">Edit</a>
-        </div>
-      </div>
-    <% }) %>
 
   </div>
 </body>

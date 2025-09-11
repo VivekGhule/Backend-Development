@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-900 text-white">
+  <div class="w-full min-h-screen p-10">
+    <div class="nav flex justify-between">
+      
+      <h2 class="text-2xl font-bold mb-2">Home</h2>
+      <a class="mb-8 px-2 py-1 rounded-md bg-orange-500 inline-block text-white" href="/logout">Logout</a>
+    </div>
+
+    <% allposts.forEach((post) => { %>
+      <div class="postContainer mb-6 p-4 w-[400px] overflow-hidden border border-zinc-700 rounded bg-zinc-800">
+        <!-- <h3 class="text-sm text-blue-500 pb-2 ">@</h3> -->
+        <h4 class="text-md font-semibold"><%= post.title %></h4>
+        <p class="mb-4"><%= post.content %></p>
+        <div class="panel flex space-x-4 text-blue-400">
+          <a href="#">Likes (<%= post.likes || 0 %>)</a>
+        </div>
+      </div>
+    <% }) %>
+
+  </div>
+</body>
+</html>

@@ -27,9 +27,16 @@ app.get("/", function (req, res) {
   res.render("index");
 });
 app.get("/home", isLoggedIn, async function (req, res) {
-    let fetchuser = await Usermodel.findOne({email : req.user.email})
-    let fetchposts = await postmodel.find({user : fetchuser._id}) 
-  res.render("home",{fetchuser,fetchposts});
+  let fetchuser = await Usermodel.findOne({ email: req.user.email });
+  let fetchposts = await postmodel.find({ user: fetchuser._id });
+  res.render("home", { fetchuser, fetchposts });
+});
+app.get("/like/:id", isLoggedIn, async function (req, res) {
+
+  let fetchposts = await postmodel.findOne({ _id: req.params.id}).populate("user");
+  fetchposts.likes.push(req.user._id);
+    await fetchposts.save();
+  res.redirect("/home");
 });
 
 app.get("/logout", function (req, res) {
@@ -44,10 +51,13 @@ app.post("/checkuser", async function (req, res) {
   let fetchUserDet = await Usermodel.findOne({ email });
   if (!fetchUserDet) return res.status(500).send("Somthing went wrong");
 
-  await bcrypt.compare(password,fetchUserDet.password, (err, result) => {
+  await bcrypt.compare(password, fetchUserDet.password, (err, result) => {
     if (result) {
-      let token = jwt.sign({_id:fetchUserDet._id,email : fetchUserDet.email}, "shh")
-      res.cookie("token", token)
+      let token = jwt.sign(
+        { _id: fetchUserDet._id, email: fetchUserDet.email },
+        "shh"
+      );
+      res.cookie("token", token);
       res.redirect("/home");
     } else {
       res.send("Wrong PAsss");
@@ -78,32 +88,52 @@ app.post("/user", async function (req, res) {
   });
 });
 
-
 //** Blog */
 
-app.post("/createblog",isLoggedIn, async function (req,res) {
-   let fetchuser = await Usermodel.findOne({email : req.user.email})
-  let {title,body} = req.body;
+app.post("/createblog", isLoggedIn, async function (req, res) {
+  let fetchuser = await Usermodel.findOne({ email: req.user.email });
+  let { title, body } = req.body;
   let post = await postmodel.create({
     user: fetchuser._id,
-    title : title,
-    content : body
-  })
+    title: title,
+    content: body,
+  });
 
   fetchuser.posts.push(post._id);
   await fetchuser.save();
-  res.redirect("/home")
-  
+  res.redirect("/home");
+});
 
+app.get("/edit/:postid", async function (req, res) {
+  let post_id = req.params.postid;
+  let post = await postmodel.findById(post_id);
+  console.log(post);
 
-})
+  res.render("editpost", { post });
+});
+app.post("/edit/:postid", async function (req, res) {
+  let { title, body } = req.body;
+
+  let post_id = req.params.postid;
+  let post = await postmodel.findByIdAndUpdate(
+    { _id: post_id },
+    {
+      title,
+      content: body,
+    }
+  );
+  res.redirect("/home");
+});
+app.get("/allpost", async function (req, res) {
+  let allposts = await postmodel.find();
+  res.render("globalPosts", { allposts });
+});
 
 function isLoggedIn(req, res, next) {
   if (req.cookies.token === "") return res.send("You need To login first");
   else {
     let data = jwt.verify(req.cookies.token, "shh");
     req.user = data;
-
   }
   next();
 }
