@@ -34,8 +34,13 @@ app.get("/home", isLoggedIn, async function (req, res) {
 app.get("/like/:id", isLoggedIn, async function (req, res) {
 
   let fetchposts = await postmodel.findOne({ _id: req.params.id}).populate("user");
-  fetchposts.likes.push(req.user._id);
-    await fetchposts.save();
+  if (fetchposts.likes.indexOf(req.user_id) === -1) {
+    
+    fetchposts.likes.push(req.user._id);
+      await fetchposts.save();
+  }else{
+    fetchposts.likes.splice(fetchposts.likes.indexOf(req.user._id),1)
+  }
   res.redirect("/home");
 });
 
